@@ -42,14 +42,14 @@ void event(const char* payload, size_t length) {
         String messageInfo = root["payload"]["messageInfo"];
         // bool isAuto = root["payload"]["isAuto"];
 
-        if (action == "BOOTMPPT") {
-            digitalWrite(D0, (state == "state:on") ? HIGH : LOW);
+        // if (action == "BOOTMPPT") {
+        //     digitalWrite(D0, (state == "state:on") ? HIGH : LOW);
 
-            String mpptStatus = String((state == "state:on") ? "ON" : "OFF");
-            String msq = (messageInfo != "") ? messageInfo : "";
-            msq += "\r\n===============\r\n Boot Mppt Status : " + mpptStatus;
-            Line_Notify(msq);
-        }
+        //     String mpptStatus = String((state == "state:on") ? "ON" : "OFF");
+        //     String msq = (messageInfo != "") ? messageInfo : "";
+        //     msq += "\r\n===============\r\n Boot Mppt Status : " + mpptStatus;
+        //     Line_Notify(msq);
+        // }
     }
 }
 
