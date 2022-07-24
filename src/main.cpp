@@ -54,7 +54,7 @@ void event(const char* payload, size_t length) {
 }
 
 void takeSnapshot(String message) {
-    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(LED_PIN, HIGH);
     HTTPClient http;
     http.begin("http://" + String(IPCAM_IP) + ":" + String(IPCAM_PORT) + "/snapshot.cgi?user=" + String(IPCAM_USERNAME) + "&pwd=" + String(IPCAM_PASSWORD));
 
@@ -73,7 +73,7 @@ void takeSnapshot(String message) {
     }
     http.end();
 
-    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(LED_PIN, LOW);
 }
 
 bool firmwareCheckUpdate(void*) {
@@ -84,7 +84,6 @@ bool firmwareCheckUpdate(void*) {
 }
 
 bool statusCheck(void*) {
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     digitalWrite(LED_PIN, !digitalRead(LED_PIN));
     return true;
 }
@@ -129,9 +128,12 @@ void loop() {
         if (currentMillis - prevRing >= debounce) {
             senseDoorbell = analogRead(CURRENT_SENSOR_PIN);
             // detecting doolbell from current sensor
-            if (senseDoorbell > 54) {
+            // Serial.println("Current Sensor Value is " + String(senseDoorbell));
+            if (senseDoorbell >= 2) {
+                // digitalWrite(LED_BUILTIN, HIGH);
                 Serial.println("DingDong : Value is " + String(senseDoorbell));
                 takeSnapshot("☃ มีผู้มาเยือน ☃ [" + String(senseDoorbell) + "]\r\n" + printLocalTime());
+                // digitalWrite(LED_BUILTIN, LOW);
                 prevRing = currentMillis;
             }
         }
