@@ -100,22 +100,22 @@ void Line_Notify(String message) {
     req += "\r\n";
     req += "message=" + message;
 
-    if (ENABLE_DEBUG_MODE)
-        Serial.println(req);
+    // if (ENABLE_DEBUG_MODE)
+    //     Serial.println(req);
 
     client.print(req);
     delay(20);
 
-    Serial.println("-------------");
+    // Serial.println("-------------");
     while (client.connected()) {
         String line = client.readStringUntil('\n');
         if (line == "\r") {
             break;
         }
-        if (ENABLE_DEBUG_MODE)
-            Serial.println(line);
+        // if (ENABLE_DEBUG_MODE)
+        //     Serial.println(line);
     }
-    Serial.println("-------------");
+    //  Serial.println("-------------");
 }
 
 #endif

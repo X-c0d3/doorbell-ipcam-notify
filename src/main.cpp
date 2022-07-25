@@ -85,6 +85,7 @@ bool firmwareCheckUpdate(void*) {
 
 bool statusCheck(void*) {
     digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     return true;
 }
 
@@ -92,7 +93,7 @@ void setup() {
     Serial.begin(DEFAULT_BAUD_RATE);
 
     pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(LED_BUILTIN, HIGH);
 
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
@@ -116,24 +117,31 @@ void setup() {
     }
 
     wdt_enable(10000);
+    digitalWrite(LED_PIN, LOW);
+    digitalWrite(LED_BUILTIN, HIGH);
+
+    delay(1000);
 }
 
 void loop() {
     if (ENABLE_SOCKETIO && (WiFi.status() == WL_CONNECTED)) {
         wdt_reset();  // reset timer (feed watchdog)
-
         webSocket.loop();
 
         currentMillis = millis();
         if (currentMillis - prevRing >= debounce) {
             senseDoorbell = analogRead(CURRENT_SENSOR_PIN);
             // detecting doolbell from current sensor
-            // Serial.println("Current Sensor Value is " + String(senseDoorbell));
-            if (senseDoorbell >= 2) {
-                // digitalWrite(LED_BUILTIN, HIGH);
+            if (senseDoorbell > 5)
+                Serial.println("Current Sensor Value is " + String(senseDoorbell));
+
+            if (senseDoorbell > 50) {  // mine read between 0 and 7 with no current and 200 with it.  50 seemed to be safe.
+                digitalWrite(LED_BUILTIN, LOW);
+                Serial.println("#####################################");
                 Serial.println("DingDong : Value is " + String(senseDoorbell));
-                takeSnapshot("☃ มีผู้มาเยือน ☃ [" + String(senseDoorbell) + "]\r\n" + printLocalTime());
-                // digitalWrite(LED_BUILTIN, LOW);
+                // takeSnapshot("☃ มีผู้มาเยือน ☃ [" + String(senseDoorbell) + "]\r\n" + printLocalTime());
+                digitalWrite(LED_BUILTIN, HIGH);
+                Serial.println("#####################################");
                 prevRing = currentMillis;
             }
         }
