@@ -27,7 +27,7 @@ auto timer = timer_create_default();  // create a timer with default settings
 Timer<> default_timer;                // save as above
 
 int senseDoorbell = 0;
-unsigned int debounce = 1000;
+unsigned int debounce = 500;
 unsigned long currentMillis = 0;
 unsigned long prevRing = 0;
 
@@ -57,6 +57,8 @@ void takeSnapshot(String message) {
     digitalWrite(LED_PIN, HIGH);
     HTTPClient http;
     http.begin("http://" + String(IPCAM_IP) + ":" + String(IPCAM_PORT) + "/snapshot.cgi?user=" + String(IPCAM_USERNAME) + "&pwd=" + String(IPCAM_PASSWORD));
+    // For Hi Resolution use : res=0
+    // http.begin("http://" + String(IPCAM_IP) + ":" + String(IPCAM_PORT) + "/snapshot.cgi?user=" + String(IPCAM_USERNAME) + "&pwd=" + String(IPCAM_PASSWORD) + "&res=0");
 
     int httpCode = http.GET();
     if (httpCode > 0) {
@@ -135,11 +137,11 @@ void loop() {
             if (senseDoorbell > 5)
                 Serial.println("Current Sensor Value is " + String(senseDoorbell));
 
-            if (senseDoorbell > 50) {  // mine read between 0 and 7 with no current and 200 with it.  50 seemed to be safe.
+            if (senseDoorbell >= 6) {  // mine read between 0 and 7 with no current and 200 with it.  50 seemed to be safe.
                 digitalWrite(LED_BUILTIN, LOW);
                 Serial.println("#####################################");
                 Serial.println("DingDong : Value is " + String(senseDoorbell));
-                // takeSnapshot("☃ มีผู้มาเยือน ☃ [" + String(senseDoorbell) + "]\r\n" + printLocalTime());
+                takeSnapshot("☃ มีผู้มาเยือน ☃ [" + String(senseDoorbell) + "]\r\n" + printLocalTime());
                 digitalWrite(LED_BUILTIN, HIGH);
                 Serial.println("#####################################");
                 prevRing = currentMillis;

@@ -63,7 +63,7 @@ bool Line_Notify_Picture(String message, WiFiClient* stream, int len) {
     }
 
     _clientSecure.print("\r\n" + body_end);
-    while (_clientSecure.connected() && !_clientSecure.available()) delay(10);
+    // while (_clientSecure.connected() && !_clientSecure.available()) delay(10);
     if (_clientSecure.connected() && _clientSecure.available()) {
         String resp = _clientSecure.readStringUntil('\n');
         httpCode = resp.substring(resp.indexOf(" ") + 1, resp.indexOf(" ", resp.indexOf(" ") + 1)).toInt();
@@ -106,16 +106,16 @@ void Line_Notify(String message) {
     client.print(req);
     delay(20);
 
-    // Serial.println("-------------");
+    Serial.println("-------------");
     while (client.connected()) {
         String line = client.readStringUntil('\n');
         if (line == "\r") {
             break;
         }
-        // if (ENABLE_DEBUG_MODE)
-        //     Serial.println(line);
+        if (ENABLE_DEBUG_MODE)
+            Serial.println(line);
     }
-    //  Serial.println("-------------");
+    Serial.println("-------------");
 }
 
 #endif
