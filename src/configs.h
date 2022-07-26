@@ -31,9 +31,6 @@
 #define ENABLE_FIRMWARE_AUTOUPDATE false
 #define ENABLE_LINE_NOTIFY true
 
-#define MAX_WORLD_COUNT 140
-#define MIN_WORLD_COUNT 5
-
 #define CURRENT_SENSOR_PIN A0
 #define LED_PIN D5
 
