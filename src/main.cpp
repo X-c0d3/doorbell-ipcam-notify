@@ -27,7 +27,7 @@ auto timer = timer_create_default();  // create a timer with default settings
 Timer<> default_timer;                // save as above
 
 int senseDoorbell = 0;
-unsigned int debounce = 500;
+unsigned int debounce = 1000;
 unsigned long currentMillis = 0;
 unsigned long prevRing = 0;
 
