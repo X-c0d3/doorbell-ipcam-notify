@@ -17,19 +17,13 @@
 #include "configs.h"
 #include "firmware.h"
 #include "lineNotify.h"
+#include "makeResponse.h"
 #include "utility.h"
 
 SocketIoClient webSocket;
 
-unsigned long interval = 300;         // the time we need to wait
-unsigned long previousMillis = 0;     // millis() returns an unsigned long.
 auto timer = timer_create_default();  // create a timer with default settings
 Timer<> default_timer;                // save as above
-
-int senseDoorbell = 0;
-unsigned int debounce = 1000;
-unsigned long currentMillis = 0;
-unsigned long prevRing = 0;
 
 void event(const char* payload, size_t length) {
     DynamicJsonBuffer jsonBuffer;
@@ -53,7 +47,7 @@ void event(const char* payload, size_t length) {
     }
 }
 
-void takeSnapshot(String message) {
+void takeSnapshot() {
     digitalWrite(LED_PIN, HIGH);
     HTTPClient http;
     http.begin("http://" + String(IPCAM_IP) + ":" + String(IPCAM_PORT) + "/snapshot.cgi?user=" + String(IPCAM_USERNAME) + "&pwd=" + String(IPCAM_PASSWORD));
@@ -68,7 +62,7 @@ void takeSnapshot(String message) {
             int len = http.getSize();
             WiFiClient* stream = http.getStreamPtr();
             Serial.println("Sending Snapshot from Ip Camera");
-            if (Line_Notify_Picture(message, stream, len)) {
+            if (Line_Notify_Picture("☃ มีผู้มาเยือน ☃ \r\n" + printLocalTime(), stream, len)) {
                 Serial.println("The Snapshot sending success !!");
             }
         }
@@ -87,7 +81,7 @@ bool firmwareCheckUpdate(void*) {
 
 bool statusCheck(void*) {
     digitalWrite(LED_PIN, !digitalRead(LED_PIN));
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     return true;
 }
 
@@ -95,12 +89,14 @@ void setup() {
     Serial.begin(DEFAULT_BAUD_RATE);
 
     pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(LED_BUILTIN, LOW);
 
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
 
-    pinMode(CURRENT_SENSOR_PIN, INPUT);
+    // Read the current door state
+    pinMode(DOORBELL_SW, INPUT);
+
     // Connect WIFI
     setup_Wifi();
     setupTimeZone();
@@ -125,29 +121,50 @@ void setup() {
     delay(1000);
 }
 
+unsigned int debounce = 1000;
+unsigned long currentMillis = 0;
+unsigned long prevRing = 0;
+
+int switchStatusLast = LOW;  // last status switch
+int doorbellStatus = LOW;
 void loop() {
+    timer.tick();
     if (ENABLE_SOCKETIO && (WiFi.status() == WL_CONNECTED)) {
         wdt_reset();  // reset timer (feed watchdog)
         webSocket.loop();
+    }
 
-        currentMillis = millis();
-        if (currentMillis - prevRing >= debounce) {
-            senseDoorbell = analogRead(CURRENT_SENSOR_PIN);
-            // detecting doolbell from current sensor
-            if (senseDoorbell > 5)
-                Serial.println("Current Sensor Value is " + String(senseDoorbell));
+    int switchStatus = digitalRead(DOORBELL_SW);  // read status of switch
+    if (switchStatus != switchStatusLast)         // if status of button has changed
+    {
+        // ##############################################################
+        // if switch is pressed than change the LED status
+        if (switchStatus == HIGH && switchStatusLast == LOW)
+            doorbellStatus = !doorbellStatus;
 
-            if (senseDoorbell >= 6) {  // mine read between 0 and 7 with no current and 200 with it.  50 seemed to be safe.
-                digitalWrite(LED_BUILTIN, LOW);
-                Serial.println("#####################################");
-                Serial.println("DingDong : Value is " + String(senseDoorbell));
-                takeSnapshot("☃ มีผู้มาเยือน ☃ [" + String(senseDoorbell) + "]\r\n" + printLocalTime());
-                digitalWrite(LED_BUILTIN, HIGH);
+        if (doorbellStatus == HIGH) {
+            digitalWrite(LED_BUILTIN, LOW);
+
+            currentMillis = millis();
+            if (currentMillis - prevRing >= debounce) {
+                // Mode 0 : Line Notify, 2: SocketIO
+                Serial.println("DingDong " + String(doorbellStatus == HIGH ? "ON" : "OFF") + " Time: " + printLocalTime());
+                if (MODE == 0) {
+                    takeSnapshot();
+                } else if (MODE == 1) {
+                    Serial.println("Send message to socketIO");
+                    // Send message to socketIO
+                    createResponse(webSocket, true);
+                }
+
                 Serial.println("#####################################");
                 prevRing = currentMillis;
             }
+        } else {
+            digitalWrite(LED_BUILTIN, HIGH);
         }
-    }
+        // ##############################################################
 
-    timer.tick();
+        switchStatus = switchStatusLast;
+    }
 }
