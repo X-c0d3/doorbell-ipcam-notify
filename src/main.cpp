@@ -88,14 +88,14 @@ bool statusCheck(void*) {
 void setup() {
     Serial.begin(DEFAULT_BAUD_RATE);
 
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, LOW);
-
-    pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, LOW);
-
-    // Read the current door state
     pinMode(DOORBELL_SW, INPUT);
+    pinMode(RELAY_SW_PIN, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(LED_PIN, OUTPUT);
+
+    digitalWrite(LED_PIN, LOW);
+    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(RELAY_SW_PIN, HIGH);
 
     // Connect WIFI
     setup_Wifi();
@@ -115,8 +115,6 @@ void setup() {
     }
 
     wdt_enable(10000);
-    digitalWrite(LED_PIN, LOW);
-    digitalWrite(LED_BUILTIN, HIGH);
 
     delay(1000);
 }
@@ -143,8 +141,6 @@ void loop() {
             doorbellStatus = !doorbellStatus;
 
         if (doorbellStatus == HIGH) {
-            digitalWrite(LED_BUILTIN, LOW);
-
             currentMillis = millis();
             if (currentMillis - prevRing >= debounce) {
                 // Mode 0 : Line Notify, 2: SocketIO
@@ -161,10 +157,17 @@ void loop() {
                 prevRing = currentMillis;
             }
         } else {
-            digitalWrite(LED_BUILTIN, HIGH);
         }
         // ##############################################################
 
         switchStatus = switchStatusLast;
+    }
+
+    if (digitalRead(DOORBELL_SW) == HIGH) {
+        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(RELAY_SW_PIN, LOW);
+    } else {
+        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(RELAY_SW_PIN, HIGH);
     }
 }

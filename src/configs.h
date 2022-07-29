@@ -33,6 +33,7 @@
 
 #define DOORBELL_SW D0
 #define LED_PIN D5
+#define RELAY_SW_PIN D6
 
 // Mode 0 : Line Notify, 2: SocketIO
 #define MODE 1
