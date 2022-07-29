@@ -13,14 +13,14 @@
 #define LINE_TOKEN "XXXXXXXXXXXXXX"
 
 // Setup IP Camera (Generic P2P IP Camera)
-#define IPCAM_IP "192.168.137.108"
+#define IPCAM_IP "192.168.137.109"
 #define IPCAM_PORT 81
 #define IPCAM_USERNAME "admin"
 #define IPCAM_PASSWORD "1234567"
 
-#define FIRMWARE_VERSION "0.1.2"
-#define FIRMWARE_LASTUPDATE "2022-07-22"
-#define FIRMWARE_SERVER "https://www.xxxxxx.com/firmware/firmware.json"
+#define FIRMWARE_VERSION "0.1.5"
+#define FIRMWARE_LASTUPDATE "2022-07-27"
+#define FIRMWARE_SERVER "https://www.xxxxxxxx.com/firmware/firmware.json"
 
 #define API_TIMEOUT 3000
 #define ENABLE_DEBUG_MODE true
@@ -31,7 +31,10 @@
 #define ENABLE_FIRMWARE_AUTOUPDATE false
 #define ENABLE_LINE_NOTIFY true
 
-#define CURRENT_SENSOR_PIN A0
+#define DOORBELL_SW D0
 #define LED_PIN D5
+
+// Mode 0 : Line Notify, 2: SocketIO
+#define MODE 1
 
 #endif
