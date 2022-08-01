@@ -95,7 +95,7 @@ void setup() {
 
     digitalWrite(LED_PIN, LOW);
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(RELAY_SW_PIN, HIGH);
+    digitalWrite(RELAY_SW_PIN, LOW);
 
     // Connect WIFI
     setup_Wifi();
@@ -145,6 +145,7 @@ void loop() {
             if (currentMillis - prevRing >= debounce) {
                 // Mode 0 : Line Notify, 2: SocketIO
                 Serial.println("DingDong " + String(doorbellStatus == HIGH ? "ON" : "OFF") + " Time: " + printLocalTime());
+                Serial.println("MODE: " + String(MODE));
                 if (MODE == 0) {
                     takeSnapshot();
                 } else if (MODE == 1) {
@@ -165,9 +166,9 @@ void loop() {
 
     if (digitalRead(DOORBELL_SW) == HIGH) {
         digitalWrite(LED_BUILTIN, LOW);
-        digitalWrite(RELAY_SW_PIN, LOW);
+        digitalWrite(RELAY_SW_PIN, HIGH);
     } else {
         digitalWrite(LED_BUILTIN, HIGH);
-        digitalWrite(RELAY_SW_PIN, HIGH);
+        digitalWrite(RELAY_SW_PIN, LOW);
     }
 }
