@@ -143,7 +143,7 @@ void loop() {
         if (doorbellStatus == HIGH) {
             currentMillis = millis();
             if (currentMillis - prevRing >= debounce) {
-                // Mode 0 : Line Notify, 2: SocketIO
+                // Mode 0 : Line Notify, 1: SocketIO
                 Serial.println("DingDong " + String(doorbellStatus == HIGH ? "ON" : "OFF") + " Time: " + printLocalTime());
                 Serial.println("MODE: " + String(MODE));
                 if (MODE == 0) {

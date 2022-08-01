@@ -1,3 +1,10 @@
+/*
+
+  # Author : Watchara Pongsri
+  # [github/X-c0d3] https://github.com/X-c0d3/
+  # Web Site: https://wwww.rockdevper.com
+
+*/
 
 #ifndef MAKE_RESPONSE_H
 #define MAKE_RESPONSE_H
