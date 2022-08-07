@@ -96,6 +96,7 @@ void setup() {
     digitalWrite(LED_PIN, LOW);
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(RELAY_SW_PIN, LOW);
+    digitalWrite(DOORBELL_SW, LOW);
 
     // Connect WIFI
     setup_Wifi();
@@ -123,8 +124,8 @@ unsigned int debounce = 1000;
 unsigned long currentMillis = 0;
 unsigned long prevRing = 0;
 
-int switchStatusLast = LOW;  // last status switch
-int doorbellStatus = LOW;
+// int switchStatusLast = LOW;  // last status switch
+// int doorbellStatus = LOW;
 void loop() {
     timer.tick();
     if (ENABLE_SOCKETIO && (WiFi.status() == WL_CONNECTED)) {
@@ -133,35 +134,24 @@ void loop() {
     }
 
     int switchStatus = digitalRead(DOORBELL_SW);  // read status of switch
-    if (switchStatus != switchStatusLast)         // if status of button has changed
-    {
-        // ##############################################################
-        // if switch is pressed than change the LED status
-        if (switchStatus == HIGH && switchStatusLast == LOW)
-            doorbellStatus = !doorbellStatus;
-
-        if (doorbellStatus == HIGH) {
-            currentMillis = millis();
-            if (currentMillis - prevRing >= debounce) {
-                // Mode 0 : Line Notify, 1: SocketIO
-                Serial.println("DingDong " + String(doorbellStatus == HIGH ? "ON" : "OFF") + " Time: " + printLocalTime());
-                Serial.println("MODE: " + String(MODE));
-                if (MODE == 0) {
-                    takeSnapshot();
-                } else if (MODE == 1) {
-                    Serial.println("Send message to socketIO");
-                    // Send message to socketIO
-                    createResponse(webSocket, true);
-                }
-
-                Serial.println("#####################################");
-                prevRing = currentMillis;
+                                                  // Serial.println("DOORBELL_SW: " + String(switchStatus));
+    if (digitalRead(RELAY_SW_PIN) == HIGH) {
+        currentMillis = millis();
+        if (currentMillis - prevRing >= debounce) {
+            // Mode 0 : Line Notify, 1: SocketIO
+            Serial.println("DingDong " + String(switchStatus == HIGH ? "ON" : "OFF") + " Time: " + printLocalTime());
+            Serial.println("MODE: " + String(MODE));
+            if (MODE == 0) {
+                takeSnapshot();
+            } else if (MODE == 1) {
+                Serial.println("Send message to socketIO");
+                // Send message to socketIO
+                createResponse(webSocket, true);
             }
-        } else {
-        }
-        // ##############################################################
 
-        switchStatus = switchStatusLast;
+            Serial.println("#####################################");
+            prevRing = currentMillis;
+        }
     }
 
     if (digitalRead(DOORBELL_SW) == HIGH) {
