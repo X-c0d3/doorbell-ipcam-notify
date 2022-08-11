@@ -19,7 +19,7 @@
 #define IPCAM_PASSWORD "1234567"
 
 #define FIRMWARE_VERSION "0.1.9"
-#define FIRMWARE_LASTUPDATE "2022-08-02"
+#define FIRMWARE_LASTUPDATE "2022-08-12"
 #define FIRMWARE_SERVER "https://www.xxxxxxxx.com/firmware/firmware.json"
 
 #define API_TIMEOUT 3000
@@ -31,11 +31,10 @@
 #define ENABLE_FIRMWARE_AUTOUPDATE false
 #define ENABLE_LINE_NOTIFY true
 
-#define DOORBELL_SW D0
+#define VOLTAGE_ADAPTIVE_SENSOR D0
 #define LED_PIN D5
-#define RELAY_SW_PIN D6
 
 // Mode 0 : Line Notify, 1: SocketIO
-#define MODE 0
+#define MODE 1
 
 #endif

@@ -88,15 +88,13 @@ bool statusCheck(void*) {
 void setup() {
     Serial.begin(DEFAULT_BAUD_RATE);
 
-    pinMode(DOORBELL_SW, INPUT);
-    pinMode(RELAY_SW_PIN, OUTPUT);
+    pinMode(VOLTAGE_ADAPTIVE_SENSOR, INPUT_PULLUP);
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
 
     digitalWrite(LED_PIN, LOW);
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(RELAY_SW_PIN, LOW);
-    digitalWrite(DOORBELL_SW, LOW);
+    digitalWrite(VOLTAGE_ADAPTIVE_SENSOR, HIGH);
 
     // Connect WIFI
     setup_Wifi();
@@ -124,8 +122,6 @@ unsigned int debounce = 1000;
 unsigned long currentMillis = 0;
 unsigned long prevRing = 0;
 
-// int switchStatusLast = LOW;  // last status switch
-// int doorbellStatus = LOW;
 void loop() {
     timer.tick();
     if (ENABLE_SOCKETIO && (WiFi.status() == WL_CONNECTED)) {
@@ -133,13 +129,14 @@ void loop() {
         webSocket.loop();
     }
 
-    int switchStatus = digitalRead(DOORBELL_SW);  // read status of switch
-                                                  // Serial.println("DOORBELL_SW: " + String(switchStatus));
-    if (digitalRead(RELAY_SW_PIN) == HIGH) {
+    int switchStatus = digitalRead(VOLTAGE_ADAPTIVE_SENSOR);  // read status of switch
+    if (switchStatus == LOW) {
+        digitalWrite(LED_BUILTIN, LOW);
+
         currentMillis = millis();
         if (currentMillis - prevRing >= debounce) {
             // Mode 0 : Line Notify, 1: SocketIO
-            Serial.println("DingDong " + String(switchStatus == HIGH ? "ON" : "OFF") + " Time: " + printLocalTime());
+            Serial.println("DingDong " + String(switchStatus == LOW ? "ON" : "OFF") + " Time: " + printLocalTime());
             Serial.println("MODE: " + String(MODE));
             if (MODE == 0) {
                 takeSnapshot();
@@ -152,13 +149,7 @@ void loop() {
             Serial.println("#####################################");
             prevRing = currentMillis;
         }
-    }
-
-    if (digitalRead(DOORBELL_SW) == HIGH) {
-        digitalWrite(LED_BUILTIN, LOW);
-        digitalWrite(RELAY_SW_PIN, HIGH);
     } else {
         digitalWrite(LED_BUILTIN, HIGH);
-        digitalWrite(RELAY_SW_PIN, LOW);
     }
 }
