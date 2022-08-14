@@ -18,8 +18,8 @@
 #define IPCAM_USERNAME "admin"
 #define IPCAM_PASSWORD "1234567"
 
-#define FIRMWARE_VERSION "0.1.9"
-#define FIRMWARE_LASTUPDATE "2022-08-12"
+#define FIRMWARE_VERSION "0.2.0"
+#define FIRMWARE_LASTUPDATE "2022-08-14"
 #define FIRMWARE_SERVER "https://www.xxxxxxxx.com/firmware/firmware.json"
 
 #define API_TIMEOUT 3000
@@ -28,10 +28,10 @@
 #define DEFAULT_BAUD_RATE 115200
 #define DEFAULT_INTERVAL 2000
 #define CHECK_FIRMWARE_INTERVAL 60000
-#define ENABLE_FIRMWARE_AUTOUPDATE false
+#define ENABLE_FIRMWARE_AUTOUPDATE true
 #define ENABLE_LINE_NOTIFY true
 
-#define VOLTAGE_ADAPTIVE_SENSOR D0
+#define VOLTAGE_ADAPTIVE_SENSOR D6
 #define LED_PIN D5
 
 // Mode 0 : Line Notify, 1: SocketIO

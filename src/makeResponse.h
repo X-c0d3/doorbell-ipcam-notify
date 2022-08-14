@@ -26,6 +26,8 @@ void createResponse(SocketIoClient& webSocket, bool status) {
     root["lastUpdated"] = NowString();
     root["ipAddress"] = WiFi.localIP().toString();
     root["wifiSignal"] = wifiSignal();
+    root["firmware_version"] = String(FIRMWARE_VERSION);
+    root["firmware_lastupdate"] = FIRMWARE_LASTUPDATE;
 
     JsonObject& data = root.createNestedObject("action");
     data["doorbellStatus"] = status;
