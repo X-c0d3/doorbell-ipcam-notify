@@ -5,7 +5,7 @@ Hardware
 ```
 WeMos D1 (ESP8266)
 AC Voltage Adaptive Isolation Board 
-VStarcam C39S Plus Pro x2 (IP CAM)
+VStarcam C39S Plus Pro (IP CAM)
 ```
 
 
