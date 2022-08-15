@@ -35,6 +35,6 @@
 #define LED_PIN D5
 
 // Mode 0 : Line Notify, 1: SocketIO
-#define MODE 1
+#define MODE 0
 
 #endif
