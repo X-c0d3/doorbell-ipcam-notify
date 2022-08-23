@@ -88,13 +88,14 @@ bool statusCheck(void*) {
 void setup() {
     Serial.begin(DEFAULT_BAUD_RATE);
 
-    pinMode(VOLTAGE_ADAPTIVE_SENSOR, INPUT_PULLUP);
+    // pinMode(VOLTAGE_ADAPTIVE_SENSOR, INPUT_PULLUP);
+    // pinMode(VOLTAGE_ADAPTIVE_SENSOR, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
 
     digitalWrite(LED_PIN, LOW);
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(VOLTAGE_ADAPTIVE_SENSOR, HIGH);
+    // digitalWrite(VOLTAGE_ADAPTIVE_SENSOR, HIGH);
 
     // Connect WIFI
     setup_Wifi();
@@ -110,7 +111,7 @@ void setup() {
         if (ENABLE_FIRMWARE_AUTOUPDATE)
             timer.every(CHECK_FIRMWARE_INTERVAL, firmwareCheckUpdate);
 
-        Line_Notify(String(DEVICE_NAME) + " - Started...");
+        Line_Notify(String(DEVICE_NAME) + " v." + String(FIRMWARE_VERSION) + " - Started... ");
     }
 
     wdt_enable(10000);
@@ -129,21 +130,23 @@ void loop() {
         webSocket.loop();
     }
 
-    int switchStatus = digitalRead(VOLTAGE_ADAPTIVE_SENSOR);  // read status of switch
-    if (switchStatus == LOW) {
+    // int switchStatus = digitalRead(VOLTAGE_ADAPTIVE_SENSOR);  // read status of switch
+    int switchValue = analogRead(VOLTAGE_ADAPTIVE_SENSOR);
+    // if (switchStatus == LOW) {
+    if (switchValue > 1023) {
         digitalWrite(LED_BUILTIN, LOW);
 
         currentMillis = millis();
         if (currentMillis - prevRing >= debounce) {
             // Mode 0 : Line Notify, 1: SocketIO
-            Serial.println("DingDong " + String(switchStatus == LOW ? "ON" : "OFF") + " Time: " + printLocalTime());
+            Serial.println("DingDong " + String(switchValue > 1023 ? "ON" : "OFF") + " Time: " + printLocalTime());
             Serial.println("MODE: " + String(MODE));
             if (MODE == 0) {
                 takeSnapshot();
             } else if (MODE == 1) {
                 Serial.println("Send message to socketIO");
                 // Send message to socketIO
-                createResponse(webSocket, true);
+                createResponse(webSocket, true, switchValue);
             }
 
             Serial.println("#####################################");
