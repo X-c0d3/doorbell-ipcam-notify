@@ -133,13 +133,13 @@ void loop() {
     // int switchStatus = digitalRead(VOLTAGE_ADAPTIVE_SENSOR);  // read status of switch
     int switchValue = analogRead(VOLTAGE_ADAPTIVE_SENSOR);
     // if (switchStatus == LOW) {
-    if (switchValue > 1023) {
+    if (switchValue < 500) {
         digitalWrite(LED_BUILTIN, LOW);
 
         currentMillis = millis();
         if (currentMillis - prevRing >= debounce) {
             // Mode 0 : Line Notify, 1: SocketIO
-            Serial.println("DingDong " + String(switchValue > 1023 ? "ON" : "OFF") + " Time: " + printLocalTime());
+            Serial.println("DingDong " + String(switchValue < 500 ? "ON" : "OFF") + " Time: " + printLocalTime());
             Serial.println("MODE: " + String(MODE));
             if (MODE == 0) {
                 takeSnapshot();
