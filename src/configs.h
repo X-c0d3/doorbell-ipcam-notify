@@ -6,7 +6,7 @@
 #define WIFI_SSID "MY-WIFI"
 #define WIFI_PASSWORD "123456789"
 #define SOCKETIO_HOST "192.168.137.102"
-#define SOCKETIO_PORT 4001
+#define SOCKETIO_PORT 4000
 #define SOCKETIO_CHANNEL "ESP"
 
 // Line config
@@ -18,7 +18,7 @@
 #define IPCAM_USERNAME "admin"
 #define IPCAM_PASSWORD "123456789"
 
-#define FIRMWARE_VERSION "0.2.8"
+#define FIRMWARE_VERSION "1.3.2"
 #define FIRMWARE_LASTUPDATE "2022-08-23"
 #define FIRMWARE_SERVER "https://www.xxxxxxxx.com/firmware/firmware.json"
 

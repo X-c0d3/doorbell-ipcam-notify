@@ -18,7 +18,7 @@
 #include "lineNotify.h"
 #include "utility.h"
 
-void createResponse(SocketIoClient& webSocket, bool status, int value) {
+void createResponse(SocketIoClient& webSocket, bool status, int voltStatus) {
     StaticJsonBuffer<512> jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
     root["deviceName"] = DEVICE_NAME;
@@ -31,7 +31,7 @@ void createResponse(SocketIoClient& webSocket, bool status, int value) {
 
     JsonObject& data = root.createNestedObject("action");
     data["doorbellStatus"] = status;
-    data["doorbellValue"] = value;
+    data["doorbellValue"] = voltStatus;
 
     String output;
     root.prettyPrintTo(output);

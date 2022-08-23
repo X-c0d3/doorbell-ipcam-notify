@@ -68,7 +68,7 @@ void updateFirmware() {
             Serial.println("##### Found new version: " + String(newVersion));
             Serial.println("##### Current version: " + String(FIRMWARE_VERSION));
             Line_Notify("Start Upgrading new firmware version: " + String(newVersion));
-            delay(200);
+            delay(500);
             Update.onProgress(OnProgress);
 
             Serial.println("##### Start updating... ");
