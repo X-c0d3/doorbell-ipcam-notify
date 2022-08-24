@@ -85,6 +85,32 @@ bool statusCheck(void*) {
     return true;
 }
 
+unsigned int debounce = 1000;
+unsigned long currentMillis = 0;
+unsigned long prevRing = 0;
+void IRAM_ATTR Ext_INT1_ISR() {
+    currentMillis = millis();
+    if (currentMillis - prevRing >= debounce) {
+        digitalWrite(LED_BUILTIN, LOW);
+        // Mode 0 : Line Notify, 1: SocketIO
+        Serial.println("DingDong Time: " + printLocalTime());
+        Serial.println("MODE: " + String(MODE));
+        if (MODE == 0) {
+            takeSnapshot();
+        } else if (MODE == 1) {
+            Serial.println("Send message to socketIO");
+            // Send message to socketIO
+            createResponse(webSocket, true, 0);
+        }
+
+        Serial.println("#####################################");
+        prevRing = currentMillis;
+        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(VOLTAGE_ADAPTIVE_SENSOR, HIGH);
+        delay(1000);
+    }
+}
+
 void setup() {
     Serial.begin(DEFAULT_BAUD_RATE);
 
@@ -93,6 +119,16 @@ void setup() {
 
     digitalWrite(LED_PIN, LOW);
     digitalWrite(LED_BUILTIN, HIGH);
+
+    // Note: Voltage adaptive sensor working on logic "LOW"
+    pinMode(VOLTAGE_ADAPTIVE_SENSOR, INPUT);
+    attachInterrupt(digitalPinToInterrupt(VOLTAGE_ADAPTIVE_SENSOR), Ext_INT1_ISR, FALLING);
+    digitalWrite(VOLTAGE_ADAPTIVE_SENSOR, HIGH);
+    // attachInterrupt(pin, ISR(callback function), interrupt type/mode)
+    // Interrupt type/mode: It defines when the interrupt should be triggered.
+    // CHANGE: Used to trigger the interrupt whenever pin value changes.
+    // RISING: Used to trigger an interrupt when the pin goes from low to high.
+    // FALLING: Used to trigger an interrupt when the pin goes from high to low.
 
     // Connect WIFI
     setup_Wifi();
@@ -116,40 +152,12 @@ void setup() {
     delay(1000);
 }
 
-unsigned int debounce = 1000;
-unsigned long currentMillis = 0;
-unsigned long prevRing = 0;
-
 void loop() {
     if (WiFi.status() == WL_CONNECTED) {
         wdt_reset();  // reset timer (feed watchdog)
 
         if (ENABLE_SOCKETIO)
             webSocket.loop();
-
-        int voltStatus = analogRead(VOLTAGE_ADAPTIVE_SENSOR);
-        if (voltStatus < 1000) {
-            digitalWrite(LED_BUILTIN, LOW);
-
-            currentMillis = millis();
-            if (currentMillis - prevRing >= debounce) {
-                // Mode 0 : Line Notify, 1: SocketIO
-                Serial.println("DingDong " + String(voltStatus) + " Time: " + printLocalTime());
-                Serial.println("MODE: " + String(MODE));
-                if (MODE == 0) {
-                    takeSnapshot();
-                } else if (MODE == 1) {
-                    Serial.println("Send message to socketIO");
-                    // Send message to socketIO
-                    createResponse(webSocket, true, voltStatus);
-                }
-
-                Serial.println("#####################################");
-                prevRing = currentMillis;
-            }
-        } else {
-            digitalWrite(LED_BUILTIN, HIGH);
-        }
     }
     timer.tick();
 }
